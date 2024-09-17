@@ -2,12 +2,12 @@
 
 ## Abstract
 
-<div align="center">
+<!-- <div align="center">
   <img src="https://github.com/DivijH/jailbreak_word_sub/blob/main/images/Teaser.jpg" width="50%">
 </div>
 
 
-<!-- ## Dataset
+## Dataset
 
 We modified an existing dataset, AdvBench (<a href="https://arxiv.org/abs/2307.15043">Link</a>), in the five following ways:
 
