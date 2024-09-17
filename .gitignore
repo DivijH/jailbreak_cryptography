@@ -1,0 +1,4 @@
+*.key
+temp*
+responses/
+__pycache__/
