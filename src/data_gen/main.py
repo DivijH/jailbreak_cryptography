@@ -1,7 +1,7 @@
 from encode_prompts import EncodeDataset
 
 from b64 import Base_64
-from rot13 import Rot13
+from rot13 import ROT13
 from upside_down import UpsideDown
 from keyboard import KeyboardCipher # type: ignore
 from word_reversal import WordReversal

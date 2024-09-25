@@ -2,3 +2,6 @@
 temp*
 responses/
 __pycache__/
+keys/
+verified/
+nohup*
