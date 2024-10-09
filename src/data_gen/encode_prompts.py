@@ -2,7 +2,7 @@ import json
 import os
 from pathlib import Path
 
-DATASET_PATH = '../../data/advbench.jsonl'
+DATASET_PATH = '../../data/advbench_50.jsonl'
 SAVE_DIR = '../../data/encrypted_variants'
 
 class EncodeDataset:
