@@ -102,6 +102,9 @@ if __name__ == '__main__':
     else:
         raise Exception(f'{args.model} is not supported')
 
+    print(get_response('Hello', model_name))
+    exit()
+
 
     # Reading the instance
     with open(args.file, 'r') as f:
