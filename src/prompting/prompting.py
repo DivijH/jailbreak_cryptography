@@ -4,138 +4,108 @@ import json
 from pathlib import Path
 import argparse
 import google.generativeai as genai    # pip install -q -U google-generativeai
-import openai                          # pip install openai
+from openai import OpenAI              # pip install openai
 
-GEMINI_MODEL_NAME = 'gemini-pro'
-GPT4_MODEL_NAME = 'gpt-4-0125-preview'
-GPT3_MODEL_NAME = 'gpt-3.5-turbo-0125'
+ENCODING = 'wordsubstitution'
+MODEL_NAME = 'gemini-1.5-flash-002'
+INPUT_FILE_PATH = f'../../data/encrypted_variants/{ENCODING}.jsonl'
+OUTPUT_FILE_PATH = f'../../data/responses/gemini_1.5_flash/{ENCODING}.jsonl'
+API_KEY = open('../keys/gemini.key').read().strip()
+STARTING_INDEX = 0
+TEMPERTATURE = 0
+WAIT_TIME = 4
 
-WAIT_TIME = 30
 
-def get_response(messages, model_name, model=None, temp=0.0):
-    if model_name == GEMINI_MODEL_NAME:
-        if model.count_tokens(messages).total_tokens > 30_720:
-            return "NO RESPONSE"
-        response = model.generate_content(
-            messages,
-            generation_config = genai.types.GenerationConfig(
-                candidate_count = 1,
-                temperature = temp,
+class CommercialModel:
+    def __init__(self, model_name, api_key, wait_time):
+        if 'gpt' in model_name:
+            self.is_gpt = True
+            self.is_gemini = False
+            self.client = OpenAI(api_key=api_key)
+        elif 'gemini' in model_name:
+            self.is_gpt = False
+            self.is_gemini = True
+            genai.configure(api_key=api_key)
+            self.model = genai.GenerativeModel(model_name)
+        else:
+            raise NotImplementedError(f'{model_name} is not supported')
+        
+        self.model_name = model_name
+        self.input_tokens = 0
+        self.output_tokens = 0
+        self.wait_time = wait_time
+
+    def _format_prompt(self, prompt):
+        if self.is_gemini:
+            return prompt
+        elif self.is_gpt:
+            return [{
+                'role': 'user',
+                'content': prompt
+            }]
+    
+    def _prompt_model(self, prompt, temperature=0):
+        if type(prompt) == str:
+            prompt = self._format_prompt(prompt)
+
+        if self.is_gemini:
+            response = self.model.generate_content(
+                prompt,
+                generation_config = genai.GenerationConfig(
+                    temperature = temperature
+                )
             )
-        )
-        try:
-            return response.text
-        except:
-            return "NO RESPONSE"
-    
-    elif model_name == GPT4_MODEL_NAME or model_name == GPT3_MODEL_NAME:
-        response = openai.ChatCompletion.create(
-            model = model_name,
-            messages = messages,
-            temperature = temp
-        )
-        return response.choices[0].message.content
-    
-    else:
-        raise Exception(f'{model_name} is not supported')
+            self.input_tokens += response.usage_metadata.prompt_token_count
+            self.output_tokens += response.usage_metadata.candidates_token_count
+            try:
+                return response.text, self.input_tokens, self.output_tokens
+            except:
+                return "NO RESPONSE", self.input_tokens, self.output_tokens
 
-def write_response(json_ele, file_path):
-    with open(file_path, 'a+') as f:
-        f.write(json.dumps(json_ele)+'\n')
+        elif self.is_gpt:
+            completion = self.client.chat.completions.create(
+                model = self.model_name,
+                messages = prompt,
+                temperature = temperature
+            )
+            self.input_tokens += completion.usage.prompt_tokens
+            self.output_tokens += completion.usage.completion_tokens
+            return completion.choices[0].message.content, self.input_tokens, self.output_tokens
+
+    def _save_output(self, output_ele, output_path):
+        Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, 'a') as f:
+            f.write(json.dumps(output_ele) + '\n')
+
+    def prompt_dataset(self, dataset_path, output_path, index=0, temperature=0):
+        with open(dataset_path, 'r') as f:
+            data = [json.loads(ele) for ele in f.readlines()][index:]
+        
+        with tqdm(total=len(data)) as pbar:
+            for ele in data:
+                prompt = ele['prompt']
+                ele['response'], input_tokens, output_tokens = self._prompt_model(prompt, temperature)
+                # print(ele['response'])
+                # print(input_tokens, output_tokens)
+                # exit()
+                self._save_output(ele, output_path)
+                pbar.set_description(f'Input Tokens: {input_tokens}, Output Tokens: {output_tokens}')
+                time.sleep(self.wait_time)
+                pbar.update(1)
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-m', '--model', type=str, required=True, help='Model name')
-    parser.add_argument('-f', '--file', type=str, required=True, help='Input file path')
-    parser.add_argument('-o', '--output', type=str, required=True, help='Output file path')
-    parser.add_argument('-k', '--model_api_key', type=str, required=True, help='API key')
-    parser.add_argument('-i', '--index', type=int, required=False, help='Starting zero-index for evaluation')
-    parser.add_argument('-t', '--temperature', type=float, required=False, default=0.0, help='Temperature for generation')
+    parser.add_argument('-m', '--model_name', type=str, required=False, default=MODEL_NAME, help='Model name')
+    parser.add_argument('-f', '--file', type=str, required=False, default=INPUT_FILE_PATH, help='Input file path')
+    parser.add_argument('-o', '--output', type=str, required=False, default=OUTPUT_FILE_PATH, help='Output file path')
+    parser.add_argument('-k', '--api_key', type=str, required=False, default=API_KEY, help='API key')
+    parser.add_argument('-i', '--index', type=int, required=False, default=STARTING_INDEX, help='Starting zero-index for evaluation')
+    parser.add_argument('-t', '--temperature', type=float, required=False, default=TEMPERTATURE, help='Temperature for generation')
+    parser.add_argument('-w', '--wait_time', type=int, required=False, default=WAIT_TIME, help='Wait time between prompts')
     return parser.parse_args()
 
-def create_prompt(ele, model_name):
-    if ele['response_1'] == '':
-        return [{"role": "user", "parts": [ele['prompt']]}] if model_name == GEMINI_MODEL_NAME else [{"role": "user", "content": ele['prompt']}]
-
-    if ele['follow_up_question'] == '':
-        return None
-
-    if ele['selected_response'] == 1:
-        selected_response = ele['response_1']
-    elif ele['selected_response'] == 2:
-        selected_response = ele['response_2']
-    else:
-        raise Exception('Missing evaluation :(')
-
-    if model_name == GEMINI_MODEL_NAME:
-        chat_history = [
-            {"role": "user", "parts": [ele['prompt']]},
-            {"role": "model", "parts": [selected_response]},
-            {"role": "user", "parts": [ele['follow_up_question']]}
-        ]
-    elif model_name == GPT4_MODEL_NAME or model_name == GPT3_MODEL_NAME:
-        chat_history = [
-            {'role': 'user', 'content': ele['prompt']},
-            {'role': 'assistant', 'content': selected_response},
-            {'role': 'user', 'content': ele['follow_up_question']}
-        ]
-    
-    return chat_history
-
 if __name__ == '__main__':
-    # Getting arguments
     args = parse_args()
-
-    # Loading the Gemini-Pro and OpenAI API instances
-    if args.model.lower()=='gemini-pro' or args.model.lower()=='gemini':
-        genai.configure(api_key=args.model_api_key)
-        model_name = GEMINI_MODEL_NAME
-        model = genai.GenerativeModel(model_name)
-    elif args.model.lower()=='gpt4' or args.model.lower()=='gpt-4':
-        with open('openai.api.key') as f:
-            openai.api_key = f.read()
-        model_name = GPT4_MODEL_NAME
-    elif args.model.lower()=='gpt3' or args.model.lower()=='gpt-3':
-        with open('openai.api.key') as f:
-            openai.api_key = f.read()
-        model_name = GPT3_MODEL_NAME
-    else:
-        raise Exception(f'{args.model} is not supported')
-
-
-    # Reading the instance
-    with open(args.file, 'r') as f:
-        if args.index:
-            data = [json.loads(jline) for jline in f.readlines()][args.index:]
-        else:
-            data = [json.loads(jline) for jline in f.readlines()]
-    
-    # Creating the directory where the files will be saved
-    dir_path = '/'.join(args.output.split('/')[:-1])
-    Path(dir_path).mkdir(parents=True, exist_ok=True)
-
-    # Prompting the model
-    with tqdm(total=len(data)*2) as pbar:
-        for idx, ele in enumerate(data):
-            for response_num in range(1, 3):
-                prompt = create_prompt(ele, model_name)
-                if prompt is None:
-                    response = ''
-                else:
-                    if model_name == GEMINI_MODEL_NAME:
-                        response = get_response(
-                            text = prompt,
-                            model_name = model_name,
-                            model = model,
-                            temp = args.temperature
-                        )
-                    elif model_name == GPT4_MODEL_NAME or model_name == GPT3_MODEL_NAME:
-                        response = get_response(
-                            text = prompt,
-                            model_name = model_name,
-                            temp = args.temperature
-                        )
-                ele[f'response_{response_num}'] = response
-                write_response(ele, args.output)
-                time.sleep(WAIT_TIME)
-                pbar.update(1)
+    model = CommercialModel(args.model_name, args.api_key, args.wait_time)
+    model.prompt_dataset(args.file, args.output, args.index, args.temperature)
