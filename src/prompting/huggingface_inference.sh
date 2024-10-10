@@ -14,7 +14,7 @@ ENCODINGS=(
     # "upsidedown"
     # "wordreversal"
     # "wordsubstitution"
-    "twolayerencryption"
+    "substitution_rot13"
 )
 
 BASE_PATH="data/encrypted_variants"

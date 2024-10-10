@@ -104,50 +104,6 @@ class HuggingInference:
                 self.write_response(ele, output_file_path)
                 pbar.update(1)
 
-import json
-
-def process_json_file(input_file, output_file):
-    """
-    Reads a JSONL file (one JSON object per line), processes each field to decode escape characters like '\n',
-    and saves the processed JSON back to a new JSONL file.
-
-    Args:
-        input_file (str): Path to the input JSONL file.
-        output_file (str): Path to save the processed JSONL file.
-    """
-    try:
-        # Open the input JSONL file and the output file to write
-        with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
-            
-            # Process each line as a separate JSON object
-            for line in infile:
-                line = line.strip()  # Remove extra whitespace or newline characters
-
-                try:
-                    # Parse the JSON object from the line
-                    sample = json.loads(line)
-                except json.JSONDecodeError as e:
-                    print(f"Skipping invalid JSON on line: {line[:50]}... ({e})")
-                    continue
-                
-                # Function to process each field (decode escape sequences)
-                def process_field(field_value):
-                    if isinstance(field_value, str):  # Only process string fields
-                        return field_value.encode().decode('unicode_escape')
-                    return field_value
-                
-                # Process each field in the sample
-                for key in sample:
-                    sample[key] = process_field(sample[key])
-                
-                # Write the processed JSON object as a new line in the output JSONL file
-                outfile.write(json.dumps(sample) + '\n')
-
-        print(f"Processed JSONL saved to {output_file}")
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
 
 
 
@@ -167,4 +123,3 @@ if __name__ == '__main__':
         context_length = args.context,
         temperature = args.temperature
     )
-    process_json_file(args.output, args.output.replace('.jsonl', '_processed.jsonl'))
