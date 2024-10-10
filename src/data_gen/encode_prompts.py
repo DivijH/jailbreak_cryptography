@@ -2,8 +2,8 @@ import json
 import os
 from pathlib import Path
 
-DATASET_PATH = '../../data/advbench.jsonl'
-SAVE_DIR = '../../data/encrypted_variants'
+DATASET_PATH = '/mnt/midnight/steven_zhang/jailbreak_cryptography/data/advbench.jsonl'
+SAVE_DIR = '/mnt/midnight/steven_zhang/jailbreak_cryptography/data/encrypted_variants'
 
 class EncodeDataset:
     def __init__(self, dataset_path=DATASET_PATH, save_dir=SAVE_DIR):
