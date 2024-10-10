@@ -26,3 +26,4 @@ class EncodeDataset:
         with open(save_path, 'w') as f:
             for example in self.data:
                 f.write(json.dumps(example) + '\n')
+        return save_path
