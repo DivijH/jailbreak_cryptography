@@ -15,7 +15,7 @@ class Substitution_Rot13(WordSubstitution):
     def encode_message(self, sentence):
         
         def create_prompt(mappings):
-            prompt = f'The following mapping, which is encrypted with ROT13, represents the substitution of words that you need to make in order to fully understand the sentence.\n\nMappings:\n'
+            prompt = f'The following mapping, {"which is encrypted with ROT13," if self.rot13_mapping else ""} represents the substitution of words that you need to make in order to fully understand the sentence.\n\nMappings:\n'
             mapping = ''
             for idx, (key, value) in enumerate(mappings.items()):
                 mapping += f'{idx+1}. {value.lower()} - {key.lower()}\n'
@@ -44,20 +44,6 @@ class Substitution_Rot13(WordSubstitution):
 
         return prompt
 
-    # def decode_sentence(self, encrypted_sentence):
-    #     # Retrieve mappings
-
-    #     # Layer 1: Reverse ROT13
-    #     rot13_decoded = self.rot13.decode_sentence(encrypted_sentence)
-    #     print("After ROT13 Decoding:")
-    #     print(rot13_decoded)
-
-    #     # Layer 2: Reverse Word Substitution
-    #     ws_decoded = self.word_sub.decode_sentence(rot13_decoded, sentence_id)
-    #     print("\nAfter Word Substitution Decoding:")
-    #     print(ws_decoded)
-
-    #     return ws_decoded
 
     def encode_dataset(self):
         for idx, example in enumerate(self.data):
