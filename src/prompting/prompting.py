@@ -6,9 +6,10 @@ import argparse
 import google.generativeai as genai    # pip install -q -U google-generativeai
 from openai import OpenAI              # pip install openai
 
-ENCODING = 'wordsubstitution'
+ENCODING = 'advbench_50'
 MODEL_NAME = 'gemini-1.5-flash-002'
-INPUT_FILE_PATH = f'../../data/encrypted_variants/{ENCODING}.jsonl'
+# INPUT_FILE_PATH = f'../../data/encrypted_variants/{ENCODING}.jsonl'
+INPUT_FILE_PATH = f'../../data/{ENCODING}.jsonl'
 OUTPUT_FILE_PATH = f'../../data/responses/gemini_1.5_flash/{ENCODING}.jsonl'
 API_KEY = open('../keys/gemini.key').read().strip()
 STARTING_INDEX = 0
@@ -83,7 +84,8 @@ class CommercialModel:
         
         with tqdm(total=len(data)) as pbar:
             for ele in data:
-                prompt = ele['prompt']
+                # prompt = ele['prompt']
+                prompt = ele['question'] + '\n' + ele['priming_sentence']
                 ele['response'], input_tokens, output_tokens = self._prompt_model(prompt, temperature)
                 # print(ele['response'])
                 # print(input_tokens, output_tokens)
