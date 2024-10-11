@@ -2,8 +2,8 @@
 
 GPUS=0,1,2,3
 MODELS=(
-    # "meta-llama/Meta-Llama-3.1-8B-Instruct"
-    "meta-llama/Meta-Llama-3.1-70B-Instruct"
+    "meta-llama/Meta-Llama-3.1-8B-Instruct"
+    # "meta-llama/Meta-Llama-3.1-70B-Instruct"
 )
 TEMPERATURE=0.01  # Not currently in use, defaults to 1
 ENCODINGS=(
@@ -15,13 +15,14 @@ ENCODINGS=(
     # "upsidedown"
     # "wordreversal"
     # "wordsubstitution"
+    "substitution_rot13"
 )
 
-BASE_PATH="/data/data/dhanda/projects/jailbreak_cryptography/jailbreak_cryptography/data/encrypted_variants"
-OUTPUT_PATH="/data/data/dhanda/projects/jailbreak_cryptography/jailbreak_cryptography/data/responses"
-HUGGINGFACE_CACHE_DIR="/data/data/dhanda/huggingface_cache"
-HUGGINGFACE_TOKEN=$(cat /data/data/dhanda/projects/jailbreak_cryptography/jailbreak_cryptography/src/keys/huggingface.key | tr -d '[:space:]')
-INDEX=0
+BASE_PATH="data/encrypted_variants"
+OUTPUT_PATH="data/responses"
+HUGGINGFACE_CACHE_DIR="huggingface_cache"
+HUGGINGFACE_TOKEN=$(cat src/keys/huggingface.key | tr -d '[:space:]')
+INDEX=509
 
 
 for model in "${MODELS[@]}"; do
@@ -37,7 +38,7 @@ for model in "${MODELS[@]}"; do
     
     for encoding in "${ENCODINGS[@]}"; do
         echo "Starting running ${model_name} -- ${encoding} -- ${GPUS}"
-        CUDA_VISIBLE_DEVICES=${GPUS} python huggingface_inference.py \
+        CUDA_VISIBLE_DEVICES=${GPUS} python src/prompting/huggingface_inference.py \
                 -m "${model}" \
                 -f "${BASE_PATH}/${encoding}.jsonl" \
                 -o "${OUTPUT_PATH}/${model_name}/${encoding}.jsonl" \

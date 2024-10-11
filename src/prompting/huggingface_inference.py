@@ -4,7 +4,7 @@ from pathlib import Path
 import argparse
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
-
+from pprint import pprint
 MODEL_NAME = 'meta-llama/Meta-Llama-3.1-8B-Instruct'
 CONTEXT_LENGTH = 4096
 TEMPERATURE = 0.1 # Not currently in use, defaults to 1
@@ -86,7 +86,10 @@ class HuggingInference:
                 
     def write_response(self, json_ele, file_path):
         with open(file_path, 'a+') as f:
-            f.write(json.dumps(json_ele)+'\n')
+            pprint(json_ele['question'])
+            pprint(json_ele['response'])
+            print("*"*50)
+            f.write(json.dumps(json_ele)+ '\n')
     
     def prompt_dataset(self, input_file_path, output_file_path, idx=0, context_length=4096, temperature=0):
         with open(input_file_path, 'r') as f:
@@ -102,6 +105,9 @@ class HuggingInference:
                 ele['response'] = response
                 self.write_response(ele, output_file_path)
                 pbar.update(1)
+
+
+
 
 if __name__ == '__main__':
     args = parse_args()

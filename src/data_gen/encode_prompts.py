@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 
+
 DATASET_PATH = '../../data/advbench_50.jsonl'
 SAVE_DIR = '../../data/encrypted_variants'
 
@@ -25,3 +26,4 @@ class EncodeDataset:
         with open(save_path, 'w') as f:
             for example in self.data:
                 f.write(json.dumps(example) + '\n')
+        return save_path
