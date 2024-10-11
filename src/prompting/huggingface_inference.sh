@@ -1,15 +1,16 @@
 #!/bin/bash
 
-GPUS=4,5,6,7
+GPUS=0,1,2,3
 MODELS=(
     # "meta-llama/Meta-Llama-3.1-8B-Instruct"
     "meta-llama/Meta-Llama-3.1-70B-Instruct"
 )
 TEMPERATURE=0.01  # Not currently in use, defaults to 1
 ENCODINGS=(
-    # "base_64"
-    "gridencoding"
+    "base_64"
+    # "gridencoding"
     # "keyboardcipher"
+    # "leetspeak"
     # "rot13"
     # "upsidedown"
     # "wordreversal"

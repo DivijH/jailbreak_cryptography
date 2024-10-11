@@ -8,10 +8,11 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 MODEL_NAME = 'meta-llama/Meta-Llama-3.1-8B-Instruct'
 CONTEXT_LENGTH = 4096
 TEMPERATURE = 0.1 # Not currently in use, defaults to 1
-ENCODING = 'base_64'
+ENCODING = 'wordsubstitution'
 INDEX = 0
 
 FILE_PATH = f'../../data/encrypted_variants/{ENCODING}.jsonl'
+# FILE_PATH = f'../../data/{ENCODING}.jsonl'
 OUTPUT_PATH = f'../../data/responses/{MODEL_NAME.split("/")[-1]}/{ENCODING}.jsonl'
 HUGGINGFACE_CACHE_DIR = '/data/data/dhanda/huggingface_cache'
 HUGGINGFACE_TOKEN = open('../keys/huggingface.key').read()
@@ -97,6 +98,7 @@ class HuggingInference:
         with tqdm(total=len(data)) as pbar:
             for idx, ele in enumerate(data):
                 response = self.get_response(ele['prompt'], context_length, temperature)
+                # response = self.get_response(ele['question'] + '\n' + ele['priming_sentence'], context_length, temperature)
                 ele['response'] = response
                 self.write_response(ele, output_file_path)
                 pbar.update(1)
