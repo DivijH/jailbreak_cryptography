@@ -1,3 +1,4 @@
+import os
 from tqdm import tqdm
 import json
 from pathlib import Path
@@ -11,11 +12,11 @@ TEMPERATURE = 0.1 # Not currently in use, defaults to 1
 ENCODING = 'wordsubstitution'
 INDEX = 0
 
-FILE_PATH = f'data/encrypted_variants/{ENCODING}.jsonl'
+FILE_PATH = f'/home/zzhan645/jailbreak_cryptography/data/encrypted_variants/{ENCODING}.jsonl'
 # FILE_PATH = f'../../data/{ENCODING}.jsonl'
-OUTPUT_PATH = f'data/responses/{MODEL_NAME.split("/")[-1]}/{ENCODING}.jsonl'
-HUGGINGFACE_CACHE_DIR = '/data/data/dhanda/huggingface_cache'
-HUGGINGFACE_TOKEN = open('src/keys/huggingface.key').read()
+OUTPUT_PATH = f'/home/zzhan645/jailbreak_cryptography/data/responses/{MODEL_NAME.split("/")[-1]}/{ENCODING}.jsonl'
+HUGGINGFACE_CACHE_DIR = '/scratch/zzhan645/huggingface_cache'
+HUGGINGFACE_TOKEN = open('/home/zzhan645/jailbreak_cryptography/src/keys/huggingface.key').read()
 print(HUGGINGFACE_TOKEN)
 
 
@@ -93,19 +94,28 @@ class HuggingInference:
             f.write(json.dumps(json_ele)+ '\n')
     
     def prompt_dataset(self, input_file_path, output_file_path, idx=0, context_length=4096, temperature=0):
-        with open(input_file_path, 'r') as f:
-            data = [json.loads(jline) for jline in f.readlines()][idx:]
-            
-        dir_path = '/'.join(output_file_path.split('/')[:-1])
-        Path(dir_path).mkdir(parents=True, exist_ok=True)
+        try:
 
-        with tqdm(total=len(data)) as pbar:
-            for idx, ele in enumerate(data):
-                response = self.get_response(ele['prompt'], context_length, temperature)
-                # response = self.get_response(ele['question'] + '\n' + ele['priming_sentence'], context_length, temperature)
-                ele['response'] = response
-                self.write_response(ele, output_file_path)
-                pbar.update(1)
+            if not os.path.exists(input_file_path):
+                raise FileNotFoundError(f'Input file path {input_file_path} does not exist')
+            with open(input_file_path, 'r') as f:
+                data = [json.loads(jline) for jline in f][idx:]
+
+                print(f'Prompting {len(data)} examples')
+                
+            dir_path = '/'.join(output_file_path.split('/')[:-1])
+            Path(dir_path).mkdir(parents=True, exist_ok=True)
+
+            with tqdm(total=len(data)) as pbar:
+                for idx, ele in enumerate(data):
+                    response = self.get_response(ele['prompt'], context_length, temperature)
+                    # response = self.get_response(ele['question'] + '\n' + ele['priming_sentence'], context_length, temperature)
+                    ele['response'] = response
+                    self.write_response(ele, output_file_path)
+                    pbar.update(1)
+        except Exception as e:
+            print(e)
+            raise e
 
 
 
@@ -119,10 +129,14 @@ if __name__ == '__main__':
         model_name_or_path = args.model
     )
     
-    huggingface_instance.prompt_dataset(
-        input_file_path = args.file,
-        output_file_path = args.output,
-        idx = args.index,
-        context_length = args.context,
-        temperature = args.temperature
-    )
+    try:
+        huggingface_instance.prompt_dataset(
+            input_file_path = args.file,
+            output_file_path = args.output,
+            idx = args.index,
+            context_length = args.context,
+            temperature = args.temperature
+        )
+    except Exception as e:
+        print(e)
+        raise e

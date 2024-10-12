@@ -1,8 +1,8 @@
 #!/bin/bash
 
-GPUS=0,1
+GPUS=0,1,2,3
 MODELS=(
-    # "meta-llama/Meta-Llama-3.1-8B-Instruct"
+    # "meta-llama/Llama-3.1-8B-Instruct"
     "meta-llama/Llama-3.1-70B-Instruct"
 )
 TEMPERATURE=0.01  # Not currently in use, defaults to 1
@@ -32,11 +32,11 @@ ENCODINGS=(
     "substitution_grid_sentence"
 )
 
-BASE_PATH="data/encrypted_variants"
-OUTPUT_PATH="data/responses"
+BASE_PATH="/home/zzhan645/jailbreak_cryptography/data/encrypted_variants"
+OUTPUT_PATH="/home/zzhan645/jailbreak_cryptography/data/responses"
 HUGGINGFACE_CACHE_DIR="/scratch/zzhan645/huggingface_cache"
 HUGGINGFACE_TOKEN=$(cat src/keys/huggingface.key | tr -d '[:space:]')
-INDEX=509
+INDEX=0
 
 
 for model in "${MODELS[@]}"; do
@@ -54,7 +54,6 @@ for model in "${MODELS[@]}"; do
     for encoding in "${ENCODINGS[@]}"; do
         if [ ! -f "${BASE_PATH}/${encoding}.jsonl" ]; then
             echo "File ${BASE_PATH}/${encoding}.jsonl does not exist"
-            
         fi
     done
 
