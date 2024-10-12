@@ -1,13 +1,13 @@
 #!/bin/bash
 
-GPUS=0,1,2,3
+GPUS=0,1
 MODELS=(
-    "meta-llama/Meta-Llama-3.1-8B-Instruct"
-    # "meta-llama/Meta-Llama-3.1-70B-Instruct"
+    # "meta-llama/Meta-Llama-3.1-8B-Instruct"
+    "meta-llama/Llama-3.1-70B-Instruct"
 )
 TEMPERATURE=0.01  # Not currently in use, defaults to 1
 ENCODINGS=(
-    "base_64"
+    # "base_64"
     # "gridencoding"
     # "keyboardcipher"
     # "leetspeak"
@@ -15,12 +15,26 @@ ENCODINGS=(
     # "upsidedown"
     # "wordreversal"
     # "wordsubstitution"
-    "substitution_rot13"
+    "substitution_rot13_mapping"
+    "substitution_rot13_mapping_sentence"
+    "substitution_rot13_sentence"
+
+    "substitution_reversal_mapping"
+    "substitution_reversal_mapping_sentence"
+    "substitution_reversal_sentence"
+
+    "substitution_keyboard_mapping"
+    "substitution_keyboard_mapping_sentence"
+    "substitution_keyboard_sentence"
+
+    "substitution_grid_mapping"
+    "substitution_grid_mapping_sentence"
+    "substitution_grid_sentence"
 )
 
 BASE_PATH="data/encrypted_variants"
 OUTPUT_PATH="data/responses"
-HUGGINGFACE_CACHE_DIR="huggingface_cache"
+HUGGINGFACE_CACHE_DIR="/scratch/zzhan645/huggingface_cache"
 HUGGINGFACE_TOKEN=$(cat src/keys/huggingface.key | tr -d '[:space:]')
 INDEX=509
 
@@ -36,6 +50,14 @@ for model in "${MODELS[@]}"; do
     
     model_name=$(echo "${model}" | cut -d'/' -f2)
     
+    # check if each file is exist
+    for encoding in "${ENCODINGS[@]}"; do
+        if [ ! -f "${BASE_PATH}/${encoding}.jsonl" ]; then
+            echo "File ${BASE_PATH}/${encoding}.jsonl does not exist"
+            
+        fi
+    done
+
     for encoding in "${ENCODINGS[@]}"; do
         echo "Starting running ${model_name} -- ${encoding} -- ${GPUS}"
         CUDA_VISIBLE_DEVICES=${GPUS} python src/prompting/huggingface_inference.py \

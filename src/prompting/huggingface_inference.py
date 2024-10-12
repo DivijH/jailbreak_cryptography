@@ -5,17 +5,18 @@ import argparse
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from pprint import pprint
-MODEL_NAME = 'meta-llama/Meta-Llama-3.1-8B-Instruct'
+MODEL_NAME = 'meta-llama/Llama-3.1-70B-Instruct'
 CONTEXT_LENGTH = 4096
 TEMPERATURE = 0.1 # Not currently in use, defaults to 1
 ENCODING = 'wordsubstitution'
 INDEX = 0
 
-FILE_PATH = f'../../data/encrypted_variants/{ENCODING}.jsonl'
+FILE_PATH = f'data/encrypted_variants/{ENCODING}.jsonl'
 # FILE_PATH = f'../../data/{ENCODING}.jsonl'
-OUTPUT_PATH = f'../../data/responses/{MODEL_NAME.split("/")[-1]}/{ENCODING}.jsonl'
+OUTPUT_PATH = f'data/responses/{MODEL_NAME.split("/")[-1]}/{ENCODING}.jsonl'
 HUGGINGFACE_CACHE_DIR = '/data/data/dhanda/huggingface_cache'
-HUGGINGFACE_TOKEN = open('../keys/huggingface.key').read()
+HUGGINGFACE_TOKEN = open('src/keys/huggingface.key').read()
+print(HUGGINGFACE_TOKEN)
 
 
 def parse_args():
@@ -50,7 +51,7 @@ class HuggingInference:
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.tokenizer_name,
             cache_dir = self.cache_dir,
-            token = self.token,
+            # token = self.token,
             trust_remote_code = True
         )
         if self.tokenizer_name.split('/')[0] == 'meta-llama':
@@ -61,7 +62,7 @@ class HuggingInference:
             self.model_name_or_path,
             device_map = 'auto',
             cache_dir = self.cache_dir,
-            token = self.token,
+            # token = self.token,
             trust_remote_code = True
         )
     
