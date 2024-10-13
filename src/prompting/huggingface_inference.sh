@@ -1,9 +1,9 @@
 #!/bin/bash
 
-GPUS=0,1,2,3
+GPUS=1
 MODELS=(
-    # "meta-llama/Llama-3.1-8B-Instruct"
-    "meta-llama/Llama-3.1-70B-Instruct"
+    "meta-llama/Llama-3.1-8B-Instruct"
+    # "meta-llama/Llama-3.1-70B-Instruct"
 )
 TEMPERATURE=0.01  # Not currently in use, defaults to 1
 ENCODINGS=(
