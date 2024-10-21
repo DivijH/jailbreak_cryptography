@@ -24,6 +24,10 @@ This repository contains all the necessary code, scripts, and data used in our e
 │   │   ├── huggingface_inference.py      # Script for using huggingface models
 │   │   └── prompting.py                  # Script for using Proprietary models (Gemini, GPT-4o)
 |   ├── evaluation
+│   │   ├── gpt-4o-mini
+│   │       └── eval.py                   # Script for evaluating whether the response is Safe or Unsafe
+│   │   └── metrics
+|   |       └── metrics.py                # Script for calculating the ASR and DSR
 ├── keys/
 │   ├── gemini.key                        # Gemini API key for querying closed-source models
 │   ├── openai.key                        # OpenAI API key for querying models like GPT-4o
