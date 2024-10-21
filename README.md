@@ -1,7 +1,5 @@
 # When “Competency” in Reasoning Opens the Door to Vulnerability: Jailbreaking LLMs via Novel Complex Ciphers
 
-## Abstract
-
 Recent advancements in the safety of Large Language Models (LLMs) have focused on mitigating attacks crafted in natural language or through common encryption methods. However, the improved reasoning abilities of new models have inadvertently opened doors to novel attack vectors. These models, capable of understanding more complex queries, are vulnerable to attacks utilizing custom encryptions that were previously ineffective against older models.
 
 In this research, we introduce **Attacks using Custom Encryptions (ACE)**, a method that exploits this vulnerability by applying custom encryption schemes to jailbreak LLMs. Our evaluation shows that ACE achieves **up to 66% Attack Success Rate (ASR)** on closed-source models and **88% on open-source models**.
