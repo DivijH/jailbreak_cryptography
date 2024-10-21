@@ -6,15 +6,15 @@ import argparse
 import google.generativeai as genai    # pip install -q -U google-generativeai
 from openai import OpenAI              # pip install openai
 
-ENCODING = 'advbench_50'
-MODEL_NAME = 'gemini-1.5-flash-002'
-# INPUT_FILE_PATH = f'../../data/encrypted_variants/{ENCODING}.jsonl'
-INPUT_FILE_PATH = f'../../data/{ENCODING}.jsonl'
-OUTPUT_FILE_PATH = f'../../data/responses/gemini_1.5_flash/{ENCODING}.jsonl'
-API_KEY = open('../keys/gemini.key').read().strip()
+ENCODING = 'gridencoding'
+MODEL_NAME = 'gpt-4o'
+INPUT_FILE_PATH = f'../../data/encrypted_variants_overdefense/{ENCODING}.jsonl'
+# INPUT_FILE_PATH = f'../../data/cipherbench/cipherbench.jsonl'
+OUTPUT_FILE_PATH = f'../../data/encrypted_variants_overdefense/responses/{MODEL_NAME}/{ENCODING}.jsonl'
+API_KEY = open('../keys/openai.key').read().strip()
 STARTING_INDEX = 0
 TEMPERTATURE = 0
-WAIT_TIME = 4
+WAIT_TIME = 0
 
 
 class CommercialModel:
@@ -84,17 +84,34 @@ class CommercialModel:
         
         with tqdm(total=len(data)) as pbar:
             for ele in data:
-                # prompt = ele['prompt']
-                prompt = ele['question'] + '\n' + ele['priming_sentence']
+                prompt = ele['prompt']
+                # prompt = ele['question'] + '\n' + ele['priming_sentence']
                 ele['response'], input_tokens, output_tokens = self._prompt_model(prompt, temperature)
-                # print(ele['response'])
-                # print(input_tokens, output_tokens)
-                # exit()
                 self._save_output(ele, output_path)
                 pbar.set_description(f'Input Tokens: {input_tokens}, Output Tokens: {output_tokens}')
                 time.sleep(self.wait_time)
                 pbar.update(1)
+    
+    def prompt_cipherbench(self, dataset_path, output_path, index=0, temperature=0):
+        with open(dataset_path, 'r') as f:
+            data = [json.loads(ele) for ele in f.readlines()][index:]
+        
+        with tqdm(total=len(data)) as pbar:
+            for ele in data:
+                json_ele = {
+                    "sentence": ele['sentence'],
+                    "long": ele['long'],
+                    "question": ele['question'],
+                    "random": ele['random']
+                }
+                for key, value in ele.items():
+                    if key not in ['sentence', 'long', 'question', 'random']:
+                        json_ele[key], input_tokens, output_tokens = self._prompt_model(value, temperature)
 
+                self._save_output(json_ele, output_path)
+                pbar.set_description(f'Input Tokens: {input_tokens}, Output Tokens: {output_tokens}')
+                time.sleep(self.wait_time)
+                pbar.update(1)
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -111,3 +128,4 @@ if __name__ == '__main__':
     args = parse_args()
     model = CommercialModel(args.model_name, args.api_key, args.wait_time)
     model.prompt_dataset(args.file, args.output, args.index, args.temperature)
+    # model.prompt_cipherbench(args.file, args.output, args.index, args.temperature)

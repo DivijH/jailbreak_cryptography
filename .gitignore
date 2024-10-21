@@ -1,7 +1,8 @@
 *.key
 temp*
-# responses/
+responses/
 __pycache__/
 keys/
-# verified/
+verified/
 nohup*
+*.pdf

@@ -86,9 +86,6 @@ class HuggingInference:
                 
     def write_response(self, json_ele, file_path):
         with open(file_path, 'a+') as f:
-            pprint(json_ele['question'])
-            pprint(json_ele['response'])
-            print("*"*50)
             f.write(json.dumps(json_ele)+ '\n')
     
     def prompt_dataset(self, input_file_path, output_file_path, idx=0, context_length=4096, temperature=0):
