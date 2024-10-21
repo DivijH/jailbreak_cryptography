@@ -15,21 +15,25 @@ This repository contains all the necessary code, scripts, and data used in our e
 ### Directory Structure
 
 ```
-├── README.md                # This file
-├── requirements.txt         # Python dependencies
+├── README.md                             # This file
+├── requirements.txt                      # Python dependencies
 ├── src/
 │   ├── data_gen/
-│   │   └── main.py          # Script to generate encrypted data for jailbreaking LLMs
+│   │   └── main.py                       # Script to generate encrypted data for jailbreaking LLMs
 │   ├── cipherbench/
-│   │   └── generate_encryptions.py  # Script to generate custom encryption schemes for CipherBench
+│   │   └── generate_encryptions.py       # Script to generate custom encryption schemes for CipherBench
+|   ├── prompting/
+│   │   ├── huggingface_inference.py      # Script for using huggingface models
+│   │   └── prompting.py                  # Script for using Proprietary models (Gemini, GPT-4o)
+|   ├── evaluation
 ├── keys/
-│   ├── gemini.key           # Gemini API key for querying closed-source models
-│   ├── openai.key           # OpenAI API key for querying models like GPT-4o
-│   └── huggingface.key      # Hugging Face API key for open-source models
+│   ├── gemini.key                        # Gemini API key for querying closed-source models
+│   ├── openai.key                        # OpenAI API key for querying models like GPT-4o
+│   └── huggingface.key                   # Hugging Face API key for open-source models
 └── data/
-    ├── cipherbench/         # Benchmark data to evaluate LLMs' deciphering capabilities
-    ├── jailbreaking/        # Encrypted prompts for testing jailbreaking attacks
-    └── overdefensiveness/   # Data related to over-defensive behaviors in models
+    ├── cipherbench/                      # Benchmark data to evaluate LLMs' deciphering capabilities
+    ├── encrypted_variants/               # Encrypted prompts for testing jailbreaking attacks
+    └── encrypted_variants_overdefense/   # Data related to over-defensive behaviors in models
 ```
 
 ### Key Components
@@ -40,7 +44,7 @@ This repository contains all the necessary code, scripts, and data used in our e
 
 ### Scripts
 
-- **`src/data_gen/main.py`:** This script is used to generate encrypted data for jailbreaking attacks. You can modify or customize the encryption schemes here.
+- **`src/data_gen/`:** This directory contains all the encryptions used for jailbreaking attacks. You can modify or customize the encryption schemes here.
   
 - **`src/cipherbench/generate_encryptions.py`:** This script generates CipherBench, a set of custom encryption schemes used to test the decryption capabilities of the target LLMs.
 
@@ -52,12 +56,12 @@ To set up the environment and install the required dependencies, follow these st
 
    ```bash
    git clone https://github.com/your-repo/jailbreaking-llms-ciphers.git
-   cd jailbreaking-llms-ciphers
+   cd jailbreak_cryptography
    ```
 
 2. **Install dependencies:**
 
-   Make sure you have Python 3.7+ installed. Then, install the required packages:
+   Make sure you have Python 3.11+ installed. Then, install the required packages:
 
    ```bash
    pip install -r requirements.txt
@@ -71,33 +75,6 @@ To set up the environment and install the required dependencies, follow these st
    - `keys/openai.key` for OpenAI models (e.g., GPT-4).
    - `keys/huggingface.key` for Hugging Face models.
 
-## Usage
-
-1. **Generating Encrypted Data:**
-
-   To generate encrypted data for testing jailbreaking attempts, run:
-
-   ```bash
-   python src/data_gen/main.py
-   ```
-
-2. **Generating Custom Encryptions (CipherBench):**
-
-   To generate custom encryption schemes used in CipherBench, execute:
-
-   ```bash
-   python src/cipherbench/generate_encryptions.py
-   ```
-
-3. **Evaluating LLMs:**
-
-   Once the encrypted data is generated, you can use it to test the jailbreakability of the target LLMs using the provided scripts.
-
-## Data
-
-- **CipherBench Data:** Contains a benchmark dataset to evaluate how well different LLMs can decode various custom encryptions.
-- **Jailbreaking Data:** Encrypted prompts designed to exploit the vulnerabilities identified in LLMs.
-- **Overdefensiveness Data:** Dataset analyzing overly defensive responses from models when faced with ambiguous queries.
 
 ## Citation
 
@@ -111,10 +88,6 @@ If you find this work useful, please consider citing our paper:
   year={2024},
 }
 ```
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
