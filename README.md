@@ -55,7 +55,7 @@ To set up the environment and install the required dependencies, follow these st
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-repo/jailbreaking-llms-ciphers.git
+   git clone https://github.com/DivijH/jailbreak_cryptography.git
    cd jailbreak_cryptography
    ```
 
@@ -76,6 +76,7 @@ To set up the environment and install the required dependencies, follow these st
    - `keys/huggingface.key` for Hugging Face models.
 
 
+<!--
 ## Citation
 
 If you find this work useful, please consider citing our paper:
@@ -92,3 +93,4 @@ If you find this work useful, please consider citing our paper:
 ---
 
 For any questions or support, please open an issue or contact us at [email@example.com].
+-->
