@@ -38,11 +38,6 @@ This repository contains all the necessary code, scripts, and data used in our e
     └── encrypted_variants_overdefense/   # Data related to over-defensive behaviors in models
 ```
 
-### Key Components
-
-- **ACE (Attacks using Custom Encryptions):** The novel method that uses custom encryption schemes to jailbreak advanced LLMs.
-- **LACE (Layered Attacks using Custom Encryptions):** An extension of ACE that applies multiple layers of encryption to further enhance the success rate.
-- **CipherBench:** A benchmark used to assess the deciphering capabilities of LLMs when faced with novel and complex ciphers.
 
 ### Scripts
 
