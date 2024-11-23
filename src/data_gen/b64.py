@@ -21,3 +21,4 @@ class Base_64(EncodeDataset):
 if __name__ == '__main__':
     print(Base_64()._encode_message(SENTENCE))
     print(Base_64().decode_sentence(Base_64()._encode_message(SENTENCE)))
+    Base_64().encode_dataset()

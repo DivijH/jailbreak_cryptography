@@ -50,5 +50,6 @@ class GridEncoding(EncodeDataset):
         return ' '.join([decode_word(word) for word in encoded_message.split()])
 
 if __name__ == '__main__':
-    print(GridEncoding()._encode_message(SENTENCE))
-    print(GridEncoding().decode_sentence(GridEncoding()._encode_message(SENTENCE)))
+    print(GridEncoding()._encode_message(GridEncoding().data[0]['question']))
+    print(GridEncoding().decode_sentence(GridEncoding()._encode_message(GridEncoding().data[0]['question'])))
+    GridEncoding().encode_dataset() 

@@ -65,5 +65,6 @@ class WordSubstitution(EncodeDataset):
         raise(NotImplementedError)
 
 if __name__ == "__main__":
-    print(WordSubstitution()._encode_message(SENTENCE))
-    print(WordSubstitution().decode_sentence(WordSubstitution()._encode_message(SENTENCE)))
+    # print(WordSubstitution()._encode_message(SENTENCE))
+    # print(WordSubstitution().decode_sentence(WordSubstitution()._encode_message(SENTENCE)))
+    WordSubstitution().encode_dataset()

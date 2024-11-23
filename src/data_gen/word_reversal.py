@@ -19,3 +19,4 @@ class WordReversal(EncodeDataset):
 if __name__ == '__main__':
     print(WordReversal()._encode_message(SENTENCE))
     print(WordReversal().decode_sentence(WordReversal()._encode_message(SENTENCE)))
+    WordReversal().encode_dataset()
