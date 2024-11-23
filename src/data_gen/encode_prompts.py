@@ -3,8 +3,9 @@ import os
 from pathlib import Path
 
 
-DATASET_PATH = '../../data/advbench_50.jsonl'
-SAVE_DIR = '../../data/encrypted_variants'
+# DATASET_PATH = '../../data/advbench_50.jsonl'
+DATASET_PATH = '../../data/jailbreakbench_data_harmful-behaviors.jsonl'
+SAVE_DIR = '../../data/encrypted_variants/jailbreak_bench'
 
 class EncodeDataset:
     def __init__(self, dataset_path=DATASET_PATH, save_dir=SAVE_DIR):
