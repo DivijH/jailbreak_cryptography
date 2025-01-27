@@ -68,9 +68,9 @@ To set up the environment and install the required dependencies, follow these st
 
    Make sure to add your API keys for the LLM models you are testing:
 
-   - `keys/gemini.key` for Gemini models.
-   - `keys/openai.key` for OpenAI models (e.g., GPT-4).
-   - `keys/huggingface.key` for Hugging Face models.
+   - `src/keys/gemini.key` for Gemini models.
+   - `src/keys/openai.key` for OpenAI models (e.g., GPT-4).
+   - `src/keys/huggingface.key` for Hugging Face models.
 
 
 <!--
